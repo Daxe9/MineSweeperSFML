@@ -14,6 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 add_library(lib.h SHARED IMPORTED)
 add_library(grid.h SHARED IMPORTED)
 add_library(board_handler.h SHARED IMPORTED)
+add_library(sfml_text.h SHARED IMPORTED)
 
 add_executable(
         MineSweeperSFML
