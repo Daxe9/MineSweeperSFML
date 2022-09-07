@@ -87,7 +87,6 @@ namespace Game {
                             if (board.matrix
                                 .at(event.mouseButton.x / rect_size)
                                 .at(event.mouseButton.y / rect_size).count != -1) {
-                                LOG("here", 1);
                                 board.controlNeighbours(
                                         event.mouseButton.x / rect_size,
                                         event.mouseButton.y / rect_size);
