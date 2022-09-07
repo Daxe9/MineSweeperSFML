@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
-project(testSFML VERSION 1.0)
+project(MineSweeperSFML VERSION 1.0)
 include(FetchContent)
 set(BUILD_SHARED_LIBS OFF)
 FetchContent_Declare(
