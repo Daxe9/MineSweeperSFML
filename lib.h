@@ -40,6 +40,7 @@ namespace Game {
                                 std::to_string(
                                         board.matrix.at(i).at(j).count),
                                 font,
+                                matrix_width,
                                 i * rect_size + rect_size / 2.f,
                                 j * rect_size + rect_size / 2.f));
             }
@@ -73,6 +74,7 @@ namespace Game {
 
 
         sf::Event event;
+        bool isGameOver = false;
         while (window->isOpen()) {
             // waiting for event
             if (window->waitEvent(event)) {
@@ -82,16 +84,29 @@ namespace Game {
                         break;
                     case sf::Event::MouseButtonPressed:
                         if (event.mouseButton.button == sf::Mouse::Left) {
-                            board.controlNeighbours(event.mouseButton.x / rect_size, event.mouseButton.y / rect_size);
-                            visible_cells = board.countVisibleCells();
+                            if (board.matrix
+                                .at(event.mouseButton.x / rect_size)
+                                .at(event.mouseButton.y / rect_size).count != -1) {
+                                LOG("here", 1);
+                                board.controlNeighbours(
+                                        event.mouseButton.x / rect_size,
+                                        event.mouseButton.y / rect_size);
+                                visible_cells = board.countVisibleCells();
+                            } else {
+                                isGameOver = true;
+                            }
+
                         }
                         break;
                 }
             }
 
+
+
+
             // clear all the window
             window->clear();
-
+            // draw the background, (not needed)
             window->draw(background);
 
             // draw the grid
@@ -100,6 +115,30 @@ namespace Game {
             // draw the text
             for (std::pair<int, int> &coordinates: visible_cells) {
                 window->draw(grid_text.at(coordinates.first).at(coordinates.second).text);
+            }
+
+            if (isGameOver) {
+                SFMLText win(
+                        "You lost!",
+                        font,
+                        5,
+                        board_width / 2.f,
+                        board_height / 2.f);
+                win.text.setStyle(sf::Text::Bold);
+                win.text.setFillColor(sf::Color::Red);
+                window->draw(win.text);
+            }
+
+            if (board.getNeededCellToExplore() == 0) {
+                SFMLText win(
+                        "You won!",
+                        font,
+                        5,
+                        board_width / 2.f,
+                        board_height / 2.f);
+                win.text.setStyle(sf::Text::Bold);
+                win.text.setFillColor(sf::Color::Red);
+                window->draw(win.text);
             }
 
             // display the window
