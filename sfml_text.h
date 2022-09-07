@@ -1,3 +1,4 @@
+
 class SFMLText : public sf::Text {
 public:
     sf::Text text;
@@ -15,7 +16,12 @@ public:
         text.setPosition(x, y);
     }
 
+    void reset_title(int num) {
+        text.setString(std::to_string(num));
+    }
+
     void reset_position(const float x, const float y) {
         text.setPosition(x, y);
     }
 };
+

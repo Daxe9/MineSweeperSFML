@@ -45,10 +45,10 @@ public:
         }
     }
 
-    sf::Vector3i detect_cell(const int x, const int y)  {
+    sf::Vector2i detect_cell(const int x, const int y)  {
         int cell_x_position = x / rect_size.x;
         int cell_y_position = y / rect_size.y;
 //        LOG("x: " << cell_x_position, " y: " << cell_y_position);
-        return {cell_x_position, cell_y_position, (int) rect_size.x};
+        return {cell_x_position, cell_y_position};
     }
 };

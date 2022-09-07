@@ -1,6 +1,7 @@
 #include <vector>
 #include <iostream>
 #include <random>
+#include <utility>
 #define DEBUG 1
 
 
@@ -23,9 +24,6 @@ public:
     std::vector<std::vector<Cell>> matrix;
     int width;
     int height;
-
-public:
-
     int direction[8][2] = {
             // top left corner
             {-1, -1},
@@ -45,6 +43,9 @@ public:
             {1,  1}};
 
 
+
+public:
+
     BoarderHandler(int board_width = 5, int board_height = 5) {
         width = board_width;
         height = board_height;
@@ -53,6 +54,17 @@ public:
         matrix = createMatrix();
     }
 
+    std::vector<std::pair<int, int>> countVisibleCells() {
+        std::vector<std::pair<int, int>> visible_cells;
+        for (size_t i = 0; i < matrix.size(); ++i) {
+            for (size_t j = 0; j < matrix.at(i).size(); ++j) {
+                if (matrix.at(i).at(j).visible) {
+                    visible_cells.emplace_back(std::make_pair(i, j));
+                }
+            }
+        }
+        return visible_cells;
+    }
     int countBomb(std::vector<std::vector<Cell>> &_matrix, int x, int y) {
         int counter = 0;
 
@@ -74,7 +86,6 @@ public:
     void controlNeighbours(int x, int y) {
         matrix.at(x).at(y).visible = true;
         setNeededCellToExplore(getNeededCellToExplore() - 1);
-
         for (auto &arr : direction) {
             try {
                 if (matrix.at(x).at(y).count == 0) {
@@ -187,7 +198,6 @@ private:
             for (size_t j = 0; j < _matrix.at(i).size(); ++j) {
                 if (_matrix.at(i).at(j).count != -1) {
                     _matrix.at(i).at(j).count = countBomb(_matrix, (int) i, (int) j);
-
                 }
             }
         }

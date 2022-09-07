@@ -1,6 +1,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <memory>
 
 #include "grid.h"
 #include "board_handler.h"
@@ -13,19 +14,38 @@
 #endif
 
 
-namespace App {
-
-
-
-
-
-
+namespace Game {
     void run() {
-        int board_width = 500, board_height = 500;
+        int board_width = 500, board_height = board_width;
         int matrix_width = 10, matrix_height = matrix_width;
+        float rect_size = board_width / matrix_width;
+
         float rectangle_outline_thickness = 2.f;
 
-        std::vector<std::vector<Single_Cell>> matrix = createMatrix(matrix_width, matrix_height);
+        // initialize the font for the text
+        sf::Font font;
+        if(!font.loadFromFile("../media/RobotoSlab-VariableFont_wght.ttf")) {
+            throw std::runtime_error("Font not found");
+        }
+
+        // initialize board handler in order to play the game
+        BoarderHandler board(matrix_width, matrix_height);
+        std::vector<std::vector<SFMLText>> grid_text;
+        std::vector<std::pair<int, int>> visible_cells;
+        for (size_t i = 0; i < board.matrix.size(); ++i) {
+            std::vector<SFMLText> temp;
+            for (size_t j = 0; j < board.matrix.at(i).size(); ++j) {
+                temp.emplace_back(
+                        SFMLText(
+                                std::to_string(
+                                        board.matrix.at(i).at(j).count),
+                                font,
+                                i * rect_size + rect_size / 2.f,
+                                j * rect_size + rect_size / 2.f));
+            }
+            grid_text.emplace_back(temp);
+        }
+
         sf::RenderWindow *window = new sf::RenderWindow(
                 sf::VideoMode(
                         board_width,
@@ -51,34 +71,7 @@ namespace App {
         // give outline color
         grid.init_rect_outline_color(sf::Color(192, 192, 192), sf::Color(0, 0, 0));
 
-        int random_x = 3, random_y = 3;
-        int rect_size = 50;
 
-//        sf::Font font;
-//        if(!font.loadFromFile("../media/RobotoSlab-VariableFont_wght.ttf")) return;
-//        sf::Text text;
-//
-//        text.setFont(font);
-//        text.setCharacterSize(24);
-//        text.setFillColor(sf::Color::Black);
-//
-//
-//        text.setString("1");
-//        text.setOrigin(text.getLocalBounds().width/2.0f,text.getLocalBounds().height/2.0f);
-////        text.setPosition(board_width / 2.f,board_height / 2.f);
-//        text.setPosition(random_x * rect_size + rect_size / 2.f, random_y * rect_size + rect_size / 2.f);
-
-        sf::Font font;
-        // "../media/RobotoSlab-VariableFont_wght.ttf"
-        if(!font.loadFromFile("../media/RobotoSlab-VariableFont_wght.ttf")) {
-            throw std::runtime_error("Font not found");
-        }
-
-        SFMLText testText = SFMLText(
-                "7",
-                font,
-                random_x * rect_size + rect_size / 2.f,
-                random_y * rect_size + rect_size / 2.f);
         sf::Event event;
         while (window->isOpen()) {
             // waiting for event
@@ -89,15 +82,10 @@ namespace App {
                         break;
                     case sf::Event::MouseButtonPressed:
                         if (event.mouseButton.button == sf::Mouse::Left) {
-                            sf::Vector3i positions = grid.detect_cell(event.mouseButton.x, event.mouseButton.y);
-                            testText.reset_position(
-                                    positions.x * positions.z + positions.z / 2.f,
-                                    positions.y * positions.z + positions.z / 2.f);
+                            board.controlNeighbours(event.mouseButton.x / rect_size, event.mouseButton.y / rect_size);
+                            visible_cells = board.countVisibleCells();
                         }
                         break;
-                    default:
-                        LOG("Event not handled", 0);
-
                 }
             }
 
@@ -108,10 +96,12 @@ namespace App {
 
             // draw the grid
             grid.draw();
-            LOG(5,5);
+
             // draw the text
-            window->draw(testText.text);
-            LOG(6,6);
+            for (std::pair<int, int> &coordinates: visible_cells) {
+                window->draw(grid_text.at(coordinates.first).at(coordinates.second).text);
+            }
+
             // display the window
             window->display();
         }
