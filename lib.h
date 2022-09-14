@@ -7,7 +7,7 @@
 #include "board_handler.h"
 #include "sfml_text.h"
 
-#if 1
+#if 0
 #define LOG(x, y) std::cout << x << " " << y << std::endl
 #else
 #define LOG(x)
