@@ -24,6 +24,8 @@ public:
     std::vector<std::vector<Cell>> matrix;
     int width;
     int height;
+
+    // every directions to explore
     int direction[8][2] = {
             // top left corner
             {-1, -1},
@@ -45,7 +47,12 @@ public:
 
 
 public:
-
+    /**
+     * @brief Construct a new Boarder Handler object with given width and height
+     *
+     * @param width
+     * @param height
+     */
     BoarderHandler(int board_width = 5, int board_height = 5) {
         width = board_width;
         height = board_height;
@@ -53,6 +60,7 @@ public:
         setNeededCellToExplore(width * height - getDiscrminant());
         matrix = createMatrix();
     }
+
 
     std::vector<std::pair<int, int>> countVisibleCells() {
         std::vector<std::pair<int, int>> visible_cells;
@@ -65,6 +73,14 @@ public:
         }
         return visible_cells;
     }
+
+    /**
+     * @brief explore surrounding bombs
+     * @param _matrix
+     * @param x
+     * @param y
+     * @return counter of the bombs
+     */
     int countBomb(std::vector<std::vector<Cell>> &_matrix, int x, int y) {
         int counter = 0;
 
@@ -83,6 +99,11 @@ public:
         return counter;
     }
 
+    /**
+     * @brief explore surrounding cells
+     * @param x
+     * @param y
+     */
     void controlNeighbours(int x, int y) {
         matrix.at(x).at(y).visible = true;
         setNeededCellToExplore(getNeededCellToExplore() - 1);
@@ -129,6 +150,10 @@ public:
         neededCellToExplore = new_neededCellToExplore;
     }
 
+    /**
+     * @brief print the matrix
+     * @param reveal, if reveal is true then it will print the matrix with the bombs
+     */
     void printMatrix(bool reveal) {
         for (size_t i = 0; i < matrix.size(); ++i) {
             for (size_t j = 0; j < matrix.at(i).size(); ++j) {
@@ -159,7 +184,10 @@ private:
     int discrminant;
     int neededCellToExplore;
 private:
-    // initialize how many bombs are in the board
+    /**
+     * @brief initialize the number of the bombs based on the discrimant
+     * @params void matrix
+     */
     void bombInitializer(std::vector<std::vector<Cell>> &_matrix)  {
         std::random_device rd;
         std::mt19937 mt(rd());
@@ -177,6 +205,10 @@ private:
         }
     }
 
+    /**
+     * @brief create the matrix
+     * @return created matrix
+     */
     std::vector<std::vector<Cell>> createMatrix() {
         std::vector<std::vector<Cell>> _matrix;
         // initialized the boarrd
